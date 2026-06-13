@@ -1,0 +1,8 @@
+{
+  "name": "Mental Wellness Tracker",
+  "description": "An AI-powered daily journal, stress analyzer, empathetic chat companion, and mindfulness coaching app tailored for NEET, JEE, UPSC, and competitive exam aspirants.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
