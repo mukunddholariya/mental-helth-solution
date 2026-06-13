@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChatMessage, JournalAnalysis } from "@/src/types";
+import { ChatMessage, JournalAnalysis, STUDENT_HELPLINES, sendCompanionChat } from "@manas/core";
 import { Send, Smile, Info, RefreshCw, Sparkles, MessageCircle, AlertTriangle, PhoneCall, ShieldAlert, Heart, Volume2 } from "lucide-react";
-import { STUDENT_HELPLINES } from "@/src/data";
-import { sendCompanionChat } from "@/src/services/api";
 
 interface CompanionChatProps {
   examType: string;
@@ -177,12 +175,14 @@ export default function CompanionChat({
         <div className="flex items-center gap-2" id="chat-header-actions">
           {messages.length > 1 && (
             <button
+              type="button"
               onClick={onClearHistory}
               title="Clear entire session history"
               className="text-xs text-slate-400 hover:text-rose-400 bg-slate-950 border border-slate-800 px-2.5 py-1.5 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
               id="clear-chat-log"
+              aria-label="Clear chat conversational logs"
             >
-              <RefreshCw className="w-3 h-3" />
+              <RefreshCw className="w-3 h-3" aria-hidden="true" />
               <span>Reset</span>
             </button>
           )}
@@ -190,11 +190,11 @@ export default function CompanionChat({
       </div>
 
       {/* Main message layout panel */}
-      <div className="flex-1 overflow-y-auto px-5 py-6 space-y-5 bg-gradient-to-b from-slate-950 to-slate-900/60" id="chat-messages-scroll-pane">
+      <div className="flex-1 overflow-y-auto px-5 py-6 space-y-5 bg-gradient-to-b from-slate-950 to-slate-900/60" id="chat-messages-scroll-pane" role="log" aria-label="Chat messages history log">
         {/* Helper Banner describing Context */}
         {recentAnalysis && (
           <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-3 text-emerald-300 text-[11px] leading-relaxed flex items-center gap-2.5" id="context-relay-banner">
-            <Info className="w-4 h-4 shrink-0" />
+            <Info className="w-4 h-4 shrink-0" aria-hidden="true" />
             <span>
               Manas has integrated your journal context: currently processing <strong>{recentAnalysis.emotion}</strong> feelings and focusing on stress management.
             </span>
@@ -205,7 +205,7 @@ export default function CompanionChat({
         {crisisDetected && (
           <div className="bg-rose-500/10 border border-rose-500/30 rounded-xl p-4 text-slate-200" id="crisis-helpline-alert">
             <div className="flex items-start gap-3">
-              <ShieldAlert className="w-6 h-6 text-rose-400 shrink-0 mt-0.5" />
+              <ShieldAlert className="w-6 h-6 text-rose-400 shrink-0 mt-0.5" aria-hidden="true" />
               <div className="space-y-2">
                 <h5 className="text-rose-300 font-bold text-xs uppercase tracking-wide">Critical Support available</h5>
                 <p className="text-[11px] text-slate-300 leading-relaxed">
@@ -285,12 +285,13 @@ export default function CompanionChat({
       {messages.length <= 1 && !isTyping && (
         <div className="px-5 pt-3 pb-1 border-t border-slate-800/40 shrink-0" id="suggested-prompts-tray">
           <span className="block text-[10px] text-slate-500 uppercase tracking-widest font-semibold mb-2 flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400/80" /> Or pick a common stressor to ask
+            <Sparkles className="w-3.5 h-3.5 text-emerald-400/80" aria-hidden="true" /> Or pick a common stressor to ask
           </span>
-          <div className="flex flex-wrap gap-2 overflow-x-auto pb-2 scrollbar-none" id="suggestions-bubbles">
+          <div className="flex flex-wrap gap-2 overflow-x-auto pb-2 scrollbar-none" id="suggestions-bubbles" role="group" aria-label="Suggested questions">
             {CONSTANT_SUGGESTED_PROMPTS.map((prompt) => (
               <button
                 key={prompt}
+                type="button"
                 onClick={() => handleSendMessage(prompt)}
                 className="text-[11px] bg-slate-900 border border-slate-800 hover:border-emerald-400/50 hover:bg-slate-850 px-3 py-1.5 rounded-lg text-slate-350 transition transition-transform shrink-0 cursor-pointer active:scale-95"
               >
@@ -302,7 +303,8 @@ export default function CompanionChat({
       )}
 
       {/* Input panel block footer */}
-      <form onSubmit={handleFormSubmit} className="bg-slate-900/90 border-t border-slate-800 p-4 shrink-0 flex items-center gap-2.5" id="chat-input-row">
+      <form onSubmit={handleFormSubmit} className="bg-slate-900/90 border-t border-slate-800 p-4 shrink-0 flex items-center gap-2.5" id="chat-input-row" aria-label="Send messages form">
+        <label htmlFor="chat-user-input" className="sr-only">Type your message to Manas</label>
         <input
           id="chat-user-input"
           type="text"
@@ -316,8 +318,9 @@ export default function CompanionChat({
           disabled={!inputText.trim() || isTyping}
           className="bg-emerald-400 hover:bg-emerald-300 disabled:bg-slate-850 disabled:text-slate-600 p-3 rounded-xl transition text-slate-950 font-bold shrink-0 cursor-pointer active:scale-95 flex items-center justify-center shadow-md shadow-emerald-500/10"
           id="send-chat-btn"
+          aria-label="Send message"
         >
-          <Send className="w-4 h-4 text-slate-950" />
+          <Send className="w-4 h-4 text-slate-950" aria-hidden="true" />
         </button>
       </form>
     </div>

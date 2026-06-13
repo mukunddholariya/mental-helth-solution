@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { BREATHING_PATTERNS, DEFAULT_AFFIRMATIONS } from "@/src/data";
+import { BREATHING_PATTERNS, DEFAULT_AFFIRMATIONS } from "@manas/core";
 import { Wind, ShieldAlert, Sparkles, AlertCircle, RefreshCw, Volume2, Music, Check, Compass, Play, Pause } from "lucide-react";
 
 interface MindfulnessHubProps {
@@ -160,14 +160,22 @@ export default function MindfulnessHub({ examType }: MindfulnessHubProps) {
         {/* Breathing Machine Area (Left/Middle Column) */}
         <div className="lg:col-span-7 bg-slate-950 border border-slate-800/80 p-6 md:p-8 rounded-2xl flex flex-col items-center justify-between" id="breathing-coach-zone">
           <div className="w-full" id="coach-selector">
-            <span className="block text-[10px] font-semibold text-slate-500 uppercase tracking-widest text-center mb-3">
+            <span id="breathing-rhythm-lbl" className="block text-[10px] font-semibold text-slate-500 uppercase tracking-widest text-center mb-3">
               Step 1: Pick a Breathing Rhythm
             </span>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3" id="pattern-pockets">
+            <div 
+              className="grid grid-cols-1 sm:grid-cols-3 gap-3" 
+              id="pattern-pockets"
+              role="radiogroup"
+              aria-labelledby="breathing-rhythm-lbl"
+            >
               {BREATHING_PATTERNS.map((pattern) => (
                 <button
                   key={pattern.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={activePattern.id === pattern.id}
                   onClick={() => setActivePattern(pattern)}
                   className={`p-3.5 rounded-xl border transition text-left cursor-pointer hover:border-emerald-500/40 relative overflow-hidden ${
                     activePattern.id === pattern.id
@@ -178,7 +186,7 @@ export default function MindfulnessHub({ examType }: MindfulnessHubProps) {
                   <span className="block font-bold text-xs">{pattern.name}</span>
                   <span className="block text-[10px] text-slate-400 mt-1 leading-normal truncate">{pattern.description}</span>
                   {activePattern.id === pattern.id && (
-                    <div className="absolute top-1 right-2 w-1.5 h-1.5 bg-emerald-400 rounded-full"></div>
+                    <div className="absolute top-1 right-2 w-1.5 h-1.5 bg-emerald-400 rounded-full" aria-hidden="true"></div>
                   )}
                 </button>
               ))}
@@ -186,7 +194,7 @@ export default function MindfulnessHub({ examType }: MindfulnessHubProps) {
           </div>
 
           {/* Large Interactive Pulsing Circle Lung Indicator */}
-          <div className="my-10 relative flex items-center justify-center h-64 w-64" id="pulsing-interactive-globe">
+          <div className="my-10 relative flex items-center justify-center h-64 w-64" id="pulsing-interactive-globe" aria-hidden="true">
             {/* outer ripple rings based on current scale */}
             <div
               className={`absolute inset-0 rounded-full bg-emerald-500/5 border border-emerald-500/15 duration-300 transition-all`}
@@ -212,7 +220,7 @@ export default function MindfulnessHub({ examType }: MindfulnessHubProps) {
                 }`}
               />
 
-              <div className="z-10 text-center space-y-1 select-none" id="bubble-readouts">
+              <div className="z-10 text-center space-y-1 select-none" id="bubble-readouts" aria-live="polite">
                 <span className={`block text-xs uppercase tracking-widest font-extrabold duration-300 ${getPhaseColor()}`}>
                   {phase}
                 </span>
@@ -230,7 +238,9 @@ export default function MindfulnessHub({ examType }: MindfulnessHubProps) {
           <div className="w-full space-y-4" id="breathing-controls">
             <div className="flex justify-center items-center gap-3">
               <button
+                type="button"
                 onClick={handleToggleBreathing}
+                aria-label={isPlaying ? "Pause breathing cycle" : "Start breathing cycle"}
                 className={`px-6 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer transition transform active:scale-95 ${
                   isPlaying
                     ? "bg-amber-400 hover:bg-amber-300 text-slate-950"
@@ -240,28 +250,30 @@ export default function MindfulnessHub({ examType }: MindfulnessHubProps) {
               >
                 {isPlaying ? (
                   <>
-                    <Pause className="w-4 h-4 text-slate-950 fill-slate-950" /> Pause cycle
+                    <Pause className="w-4 h-4 text-slate-950 fill-slate-950" aria-hidden="true" /> Pause cycle
                   </>
                 ) : (
                   <>
-                    <Play className="w-4 h-4 text-slate-950 fill-slate-950" /> Start meditation
+                    <Play className="w-4 h-4 text-slate-950 fill-slate-950" aria-hidden="true" /> Start meditation
                   </>
                 )}
               </button>
 
               {(isPlaying || secondsRemaining !== activePattern.inhale || cycleCount > 0) && (
                 <button
+                  type="button"
                   onClick={handleResetBreathing}
+                  aria-label="Reset breathing cycle"
                   className="px-4 py-3.5 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-xl text-slate-400 hover:text-white text-xs uppercase tracking-wider transition cursor-pointer active:scale-95"
                   id="breathing-reset-btn"
                 >
-                  <RefreshCw className="w-4 h-4" />
+                  <RefreshCw className="w-4 h-4" aria-hidden="true" />
                 </button>
               )}
             </div>
 
             {/* Instruction line */}
-            <p className="text-[11px] text-slate-500 text-center font-sans">
+            <p className="text-[11px] text-slate-500 text-center font-sans" aria-live="aggressive">
               {isPlaying 
                 ? `${phase === 'Inhale' ? 'Breathe in slowly through your nose...' : phase === 'Hold (In)' ? 'Hold your breath gently. Keep shoulders loose.' : phase === 'Exhale' ? 'Exhale fully through pursed lips...' : 'Rest with empty lungs before next stretch...'}`
                 : "Match your heart rhythm to the circle's expansion. Find your center."}
@@ -273,10 +285,10 @@ export default function MindfulnessHub({ examType }: MindfulnessHubProps) {
         <div className="lg:col-span-5 space-y-6" id="mindfulness-sidecar">
           {/* Affirmation slider card */}
           <div className="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-6 relative overflow-hidden" id="affirmation-card-scaffold">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl"></div>
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl pointer-events-none" aria-hidden="true"></div>
             <div className="flex items-center justify-between border-b border-slate-800 pb-3" id="affirmations-top">
               <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5 font-sans">
-                <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: "12s" }} /> Exam Affirmations Deck
+                <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: "12s" }} aria-hidden="true" /> Exam Affirmations Deck
               </span>
               <span className="text-[9px] bg-slate-950 border border-slate-800 px-2 py-0.5 rounded text-slate-400 font-mono">
                 {examType} Filter
@@ -294,7 +306,9 @@ export default function MindfulnessHub({ examType }: MindfulnessHubProps) {
 
             <div className="flex justify-end pt-3 border-t border-slate-800/40" id="affirmation-footer">
               <button
+                type="button"
                 onClick={handleNextAffirmation}
+                aria-label="Draw next exam motivation affirmation card"
                 className="text-xs text-emerald-400 hover:text-emerald-300 font-medium flex items-center gap-1 cursor-pointer transition underline decoration-dotted underline-offset-4"
                 id="shuffle-affirmations"
               >
@@ -307,7 +321,7 @@ export default function MindfulnessHub({ examType }: MindfulnessHubProps) {
           {/* Emergency pre-test crisis coping cards */}
           <div className="bg-rose-500/5 border border-rose-500/15 rounded-2xl p-6" id="emergency-calmdown">
             <h3 className="text-white font-bold font-display text-sm tracking-wide flex items-center gap-1.5 text-rose-300">
-              <Compass className="w-5 h-5 text-rose-400" />
+              <Compass className="w-5 h-5 text-rose-400" aria-hidden="true" />
               Pre-Exam Panic Mode?
             </h3>
             <p className="text-[11px] text-slate-300 mt-2 leading-relaxed">

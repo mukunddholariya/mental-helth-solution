@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { JournalEntry, JournalAnalysis } from "@/src/types";
-import { MOOD_EMOJIS } from "@/src/data";
-import { analyzeJournal } from "@/src/services/api";
+import { JournalEntry, JournalAnalysis, MOOD_EMOJIS, analyzeJournal } from "@manas/core";
 import { PenTool, BrainCircuit, Heart, Calendar, Smile, ShieldAlert, ArrowRight, Loader2, Sparkles, CheckCircle } from "lucide-react";
 
 interface DailyJournalProps {
@@ -124,7 +122,7 @@ export default function DailyJournal({ examType, studentName, onSaveEntry, onSta
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4" id="journal-heading">
         <div>
           <h2 className="text-2xl font-bold text-white font-display flex items-center gap-2">
-            <PenTool className="w-6 h-6 text-emerald-400" />
+            <PenTool className="w-6 h-6 text-emerald-400" aria-hidden="true" />
             Daily Journal & Check-in
           </h2>
           <p className="text-slate-400 text-xs mt-1">
@@ -132,7 +130,7 @@ export default function DailyJournal({ examType, studentName, onSaveEntry, onSta
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg" id="active-context-badge">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
           <span>Context: <strong>{examType}</strong> Aspirant</span>
         </div>
       </div>
@@ -146,16 +144,18 @@ export default function DailyJournal({ examType, studentName, onSaveEntry, onSta
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1 flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" /> Warm Check-In Prompt
+                    <Sparkles className="w-3 h-3" aria-hidden="true" /> Warm Check-In Prompt
                   </div>
                   <p className="text-sm italic text-slate-300">
                     "{prompts[activePromptIndex]}"
                   </p>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setActivePromptIndex((prev) => (prev + 1) % prompts.length)}
                   className="text-xs text-slate-400 hover:text-emerald-400 shrink-0 transition underline decoration-dotted underline-offset-4 cursor-pointer"
                   id="cycle-prompt"
+                  aria-label="Cycle to another journal writing prompt advice"
                 >
                   Try another
                 </button>
@@ -164,21 +164,29 @@ export default function DailyJournal({ examType, studentName, onSaveEntry, onSta
 
             {/* Quick pre-mood emoji selection */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
+              <span id="mood-selector-label" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
                 How is your emotional energy right now?
-              </label>
-              <div className="grid grid-cols-5 gap-2 md:grid-cols-5" id="emoji-grid">
+              </span>
+              <div 
+                className="grid grid-cols-5 gap-2 md:grid-cols-5" 
+                id="emoji-grid"
+                role="group"
+                aria-labelledby="mood-selector-label"
+              >
                 {MOOD_EMOJIS.map((item) => (
                   <button
                     key={item.label}
+                    type="button"
                     onClick={() => setSelectedMood(item)}
+                    aria-label={item.label}
+                    aria-pressed={selectedMood.label === item.label}
                     className={`p-3 rounded-xl flex flex-col items-center justify-center border transition transform active:scale-95 cursor-pointer ${
                       selectedMood.label === item.label
                         ? "bg-slate-800 border-emerald-400/80 shadow-md shadow-emerald-500/5 text-white"
                         : "bg-slate-950/50 border-slate-800/80 hover:bg-slate-805 text-slate-400 hover:text-slate-200"
                     }`}
                   >
-                    <span className="text-2xl">{item.emoji}</span>
+                    <span className="text-2xl" role="img" aria-label={item.label}>{item.emoji}</span>
                     <span className="text-[9px] mt-1.5 text-center leading-tight truncate w-full">{item.label}</span>
                   </button>
                 ))}
@@ -187,17 +195,17 @@ export default function DailyJournal({ examType, studentName, onSaveEntry, onSta
 
             {/* Core writing canvas */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              <label htmlFor="journal-input" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
                 Write freely. No filters, no grades, no comparisons.
               </label>
               <div className="relative">
                 <textarea
+                  id="journal-input"
                   value={entryText}
                   onChange={(e) => setEntryText(e.target.value)}
                   placeholder="Today felt heavy because of organic chemistry backlog... / I am feeling anxious about my mock score... / Honestly, I studied 6 hours and feel satisfied but physically exhausted..."
                   rows={8}
                   className="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 text-slate-200 placeholder-slate-600 font-sans leading-relaxed resize-none"
-                  id="journal-input"
                 />
                 <div className="absolute bottom-3 right-3 text-[10px] text-slate-500 font-mono">
                   {entryText.length} characters
@@ -208,19 +216,21 @@ export default function DailyJournal({ examType, studentName, onSaveEntry, onSta
             {/* Submit Action */}
             <div className="flex justify-end" id="journal-submit-area">
               <button
+                type="button"
                 onClick={handleTextAnalyze}
                 disabled={isAnalyzing || !entryText.trim()}
                 className="px-6 py-3.5 bg-emerald-400 hover:bg-emerald-300 disabled:bg-slate-800 disabled:text-slate-600 font-bold rounded-xl text-slate-950 text-xs uppercase tracking-wider flex items-center gap-2 hover:-translate-y-0.5 active:translate-y-0 transition cursor-pointer"
                 id="analyse-journal-btn"
+                aria-label="Submit journal and analyze emotional coping ideas with Manas"
               >
                 {isAnalyzing ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
+                    <Loader2 className="w-4 h-4 animate-spin text-slate-950" aria-hidden="true" />
                     Analyzing entry...
                   </>
                 ) : (
                   <>
-                    <BrainCircuit className="w-4 h-4 text-slate-950" />
+                    <BrainCircuit className="w-4 h-4 text-slate-950" aria-hidden="true" />
                     Submit & Analyze Coping Ideas
                   </>
                 )}
@@ -232,20 +242,20 @@ export default function DailyJournal({ examType, studentName, onSaveEntry, onSta
           <div className="lg:col-span-4 space-y-4" id="journal-guide-column">
             <div className="bg-slate-950/40 border border-slate-800/80 p-5 rounded-2xl" id="guide-inner">
               <h3 className="text-slate-250 font-bold mb-3 flex items-center gap-1.5 text-xs text-slate-300">
-                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                <CheckCircle className="w-4 h-4 text-emerald-400" aria-hidden="true" />
                 The Power of Journaling
               </h3>
-              <ul className="space-y-3 text-xs text-slate-400">
+              <ul className="space-y-3 text-xs text-slate-400" role="list">
                 <li className="flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0 mt-1.5"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0 mt-1.5" aria-hidden="true"></span>
                   <span>Writing down stress activates prefrontal cortex regulation, cooling down the panic circuits (amygdala).</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0 mt-1.5"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0 mt-1.5" aria-hidden="true"></span>
                   <span>Don't worry about correct spelling or handwriting. Write in whatever language combination (Hinglish/English) feels natural!</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0 mt-1.5"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0 mt-1.5" aria-hidden="true"></span>
                   <span>Extracting your stress triggers helps separate yourself from the panic, making complex problems feel smaller and solvable.</span>
                 </li>
               </ul>

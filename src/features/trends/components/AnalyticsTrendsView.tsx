@@ -1,6 +1,5 @@
 import React from "react";
-import { JournalEntry } from "@/src/types";
-import { EXAM_OPTIONS } from "@/src/data";
+import { JournalEntry, EXAM_OPTIONS } from "@manas/core";
 import {
   AreaChart,
   Area,

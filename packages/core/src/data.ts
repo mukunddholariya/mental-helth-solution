@@ -86,7 +86,7 @@ export const DEFAULT_AFFIRMATIONS: Record<string, Affirmation[]> = {
     { text: "Complex systems engineering calls for an unhurried perspective. Breathe out the heavy overload.", author: "Manas Compassion Guide" },
     { text: "Your research and engineering competence are deep skills. Trust your practice, one problem code at a time.", author: "Tech Grad Council" }
   ],
-  Cuet: [
+  CUET: [
     { text: "This transition period is a chapter of self-discovery. You are capable of thriving in whatever comes next.", author: "Student Anchor" }
   ],
   Default: [

@@ -5,12 +5,8 @@ import CompanionChat from "@/src/features/chat/components/CompanionChatView";
 import MindfulnessHub from "@/src/features/mindfulness/components/MindfulnessHubView";
 import AnalyticsTrends from "@/src/features/trends/components/AnalyticsTrendsView";
 import HelplineModal from "@/src/components/shared/HelplineModal";
-import { UserProfile, JournalEntry, ChatMessage, JournalAnalysis } from "@/src/types";
-import { EXAM_OPTIONS } from "@/src/data";
-import { useLocalStorage } from "@/src/hooks/useLocalStorage";
-import { Card } from "@/src/components/shared/Card";
-import { Button } from "@/src/components/shared/Button";
-import { InputField } from "@/src/components/shared/InputField";
+import { UserProfile, JournalEntry, ChatMessage, JournalAnalysis, EXAM_OPTIONS, useLocalStorage } from "@manas/core";
+import { Card, Button, InputField } from "@manas/ui";
 import {
   Sparkles,
   BrainCircuit,

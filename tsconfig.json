@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "ES2022",
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
@@ -18,6 +19,12 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@manas/ui": [
+        "packages/ui/src/index.ts"
+      ],
+      "@manas/core": [
+        "packages/core/src/index.ts"
       ]
     },
     "allowImportingTsExtensions": true,

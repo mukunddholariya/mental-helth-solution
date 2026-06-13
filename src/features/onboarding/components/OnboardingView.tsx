@@ -1,10 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { UserProfile } from "@/src/types";
-import { EXAM_OPTIONS } from "@/src/data";
-import { Card } from "@/src/components/shared/Card";
-import { Button } from "@/src/components/shared/Button";
-import { InputField } from "@/src/components/shared/InputField";
+import { UserProfile, EXAM_OPTIONS } from "@manas/core";
+import { Card, Button, InputField } from "@manas/ui";
 import { BookOpen, Calendar, User, Sparkles } from "lucide-react";
 
 interface OnboardingProps {

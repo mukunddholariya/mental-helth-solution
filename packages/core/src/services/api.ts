@@ -1,4 +1,4 @@
-import { JournalAnalysis, ChatMessage } from "@/src/types";
+import { JournalAnalysis } from "../types";
 
 export interface JournalAnalyzePayload {
   text: string;
